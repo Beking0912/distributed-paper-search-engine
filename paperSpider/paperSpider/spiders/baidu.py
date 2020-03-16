@@ -4,6 +4,7 @@ from urllib import parse
 
 import scrapy
 from scrapy import Request
+import requests
 
 
 class BaiduSpider(scrapy.Spider):
@@ -71,6 +72,7 @@ class BaiduSpider(scrapy.Spider):
 
         # paper_source = response.css('#allversion_wr .dl_item_span a::attr(href)').extract()
         download_link = response.css('#savelink_wr .dl_item_span a::attr(href)').extract()
+        download_link.remove('javascript:;')
 
         self.log('摘要: %s' % abstract)
         self.log('关键词: %s' % keywords)
