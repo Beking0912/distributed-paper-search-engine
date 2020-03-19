@@ -63,9 +63,11 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'paperSpider.pipelines.PaperspiderPipeline': 300,
-# }
+ITEM_PIPELINES = {
+   'paperSpider.pipelines.JsonExporterPipeline': 2,
+   'paperSpider.pipelines.MysqlPipeline': 3,
+   'paperSpider.pipelines.PaperspiderPipeline': 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

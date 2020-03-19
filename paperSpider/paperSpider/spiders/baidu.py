@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import re
 from urllib import parse
-
+from paperSpider.utils.common import format_word
 import scrapy
 from scrapy import Request
-import requests
+from paperSpider.items import PaperspiderItem
 
 
 class BaiduSpider(scrapy.Spider):
@@ -17,65 +17,58 @@ class BaiduSpider(scrapy.Spider):
         paper_nodes = response.xpath('//*[@class="sc_content"]')
         for paper_node in paper_nodes:
             paper_url = paper_node.css('h3 a::attr(href)').extract_first('')
+            yield Request(url=parse.urljoin(response.url, paper_url), callback=self.parse_detail)
 
-            paper_title = paper_node.css('h3 a::text').extract()
-            paper_title_em = paper_node.css('h3 a em::text').extract()
-            keyword = ' '.join([str(i) for i in paper_title_em])
-            for x in paper_title:
-                if x == ' ':
-                    paper_title[paper_title.index(x)] = keyword
-            paper_title = ''.join([str(i) for i in paper_title])
-
-            paper_writer = paper_node.css('.sc_info span:first-child a::text').extract()
-            cite_count = paper_node.css('.sc_cite_cont::text').extract_first(0)
-            re.sub(r'\s+', '', cite_count)
-            cite_count = str(cite_count).strip()
-
-            paper_allversion = paper_node.css('.sc_allversion .v_item_span .v_source::text').extract()
-            for i in range(0, len(paper_allversion)):
-                re.sub(r'\s+', '', paper_allversion[i])
-                paper_allversion[i] = str(paper_allversion[i]).strip()
-
-            paper_abstract = paper_node.css('.c_abstract::text').extract_first('')
-            paper_abstract = str(paper_abstract).strip()
-
-            paper_time = paper_node.css('.sc_time::text').extract_first('暂无')
-            re.sub(r'\s+', '', paper_time)
-            paper_time = str(paper_time).strip()
-
-            self.log('*************************')
-            self.log('*************************')
-            self.log('*************************')
-            self.log('url: %s' % paper_url)
-            self.log('论文题目: %s' % paper_title)
-            self.log('论文作者: %s' % paper_writer)
-            self.log('发表年代: %s' % paper_time)
-            self.log('被引用量: %s' % cite_count)
-            self.log('论文来源: %s' % paper_allversion)
-            self.log('论文简介: %s' % paper_abstract)
-
-            yield Request(url=parse.urljoin(response.url, paper_url), meta={'front_paper_url': paper_url},
-                          callback=self.parse_detail)
-
-        next_url = response.css('#page a::last-child::attr(href)').extract_first('')
+        next_url = response.css('#page > a.n::attr(href)').extract_first('')
         if next_url:
+            next_url = 'http://xueshu.baidu.com' + next_url
             yield Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
 
     def parse_detail(self, response):
-        abstract = response.css('.abstract::text').extract_first('')
+        paper_item = PaperspiderItem()
 
-        keywords = response.css('.kw_wr .kw_main span a::text').extract()
+        paper_title = response.css('.main-info h3 a::text').extract_first('')
+        paper_title = format_word(paper_title)
 
-        DOI = response.css('.doi_wr .kw_main::text').extract_first('')
-        re.sub(r'\s+', '', DOI)
-        DOI = str(DOI).strip()
+        paper_writer = response.css('.author_wr .author_text span a::text').extract()
+        paper_abstract = response.css('.abstract::text').extract_first('')
+        paper_keywords = response.css('.kw_wr .kw_main span a::text').extract()
 
-        # paper_source = response.css('#allversion_wr .dl_item_span a::attr(href)').extract()
-        download_link = response.css('#savelink_wr .dl_item_span a::attr(href)').extract()
-        download_link.remove('javascript:;')
+        paper_DOI = response.css('.doi_wr .kw_main::text').extract_first('')
+        paper_DOI = format_word(paper_DOI)
 
-        self.log('摘要: %s' % abstract)
-        self.log('关键词: %s' % keywords)
-        self.log('DOI: %s' % DOI)
-        self.log('下载地址: %s' % download_link)
+        paper_cite_count = response.css('.sc_cite_cont::text').extract_first(0)
+        paper_cite_count = format_word(paper_cite_count)
+
+        paper_source = response.css('.love_wr .label-ll a::attr(href)').extract_first('')
+
+        paper_time = response.css('.year_wr .kw_main::text').extract_first('暂无')
+        paper_time = format_word(paper_time)
+
+        paper_download_link = response.css('#savelink_wr .dl_item_span a::attr(href)').extract()
+        # paper_download_link.remove('javascript:;')
+
+        paper_item['paper_title'] = paper_title
+        paper_item['paper_writer'] = paper_writer
+        paper_item['paper_abstract'] = paper_abstract
+        paper_item['paper_keywords'] = paper_keywords
+        paper_item['paper_DOI'] = paper_DOI
+        paper_item['paper_time'] = paper_time
+        paper_item['paper_cite_count'] = paper_cite_count
+        paper_item['paper_source'] = paper_source
+        paper_item['paper_download_link'] = paper_download_link
+
+        yield paper_item
+
+        # self.log('*************************')
+        # self.log('*************************')
+        # self.log('*************************')
+        # self.log('论文题目: %s' % paper_title)
+        # self.log('论文作者: %s' % paper_writer)
+        # self.log('论文摘要: %s' % paper_abstract)
+        # self.log('关键词: %s' % paper_keywords)
+        # self.log('DOI: %s' % paper_DOI)
+        # self.log('发表年代: %s' % paper_time)
+        # self.log('被引用量: %s' % paper_cite_count)
         # self.log('论文来源: %s' % paper_source)
+        # self.log('下载地址: %s' % paper_download_link)
