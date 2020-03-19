@@ -14,11 +14,6 @@ class PaperspiderPipeline(object):
         return item
 
 
-# class JsonWithEncodingPipeline(object):
-#     # 自定义json文件导出
-#     def __init__(self):
-
-
 class MysqlPipeline(object):
     def __init__(self):
         self.conn = MySQLdb.connect('127.0.0.1', 'root', '123456', 'paper_spider_data', charset='utf8',

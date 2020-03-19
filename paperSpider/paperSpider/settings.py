@@ -20,6 +20,12 @@ NEWSPIDER_MODULE = 'paperSpider.spiders'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = False
 
+# Enables scheduling storing requests queue in redis.
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+
+# Ensure all spiders share same duplicates filter through redis.
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 # CONCURRENT_REQUESTS = 32
 
@@ -63,12 +69,15 @@ ROBOTSTXT_OBEY = False
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+# ITEM_PIPELINES = {
+#    'paperSpider.pipelines.JsonExporterPipeline': 2,
+#    'paperSpider.pipelines.MysqlPipeline': 3,
+#    'paperSpider.pipelines.PaperspiderPipeline': 300,
+# }
+# Store scraped item in redis for post-processing.
 ITEM_PIPELINES = {
-   'paperSpider.pipelines.JsonExporterPipeline': 2,
-   'paperSpider.pipelines.MysqlPipeline': 3,
-   'paperSpider.pipelines.PaperspiderPipeline': 300,
+   'scrapy_redis.pipelines.RedisPipeline': 300
 }
-
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
 # AUTOTHROTTLE_ENABLED = True
