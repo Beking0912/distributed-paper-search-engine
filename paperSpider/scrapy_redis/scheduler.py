@@ -151,6 +151,20 @@ class Scheduler(object):
         self.queue.clear()
 
     def enqueue_request(self, request):
+        # 通信 从 redis 获取 url 并放入到队列中
+        import redis
+        import json
+        import scrapy
+
+        rd = redis.Redis("127.0.0.1", decode_responses=True)
+        # 先检查指定的 redis 队列中是否有 url
+        list_name = "baidu:new_urls"
+        while rd.llen(list_name):
+            data = json.loads(rd.lpop(list_name))
+            callback_func = getattr(self.spider, data[2])
+            req = scrapy.Request(url=data[0], dont_filter=False, callback=callback_func, priority=data[1])
+            self.queue.push(req)
+
         if not request.dont_filter and self.df.request_seen(request):
             self.df.log(request, self.spider)
             return False
