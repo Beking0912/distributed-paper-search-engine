@@ -79,7 +79,8 @@ DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 # }
 # Store scraped item in redis for post-processing.
 ITEM_PIPELINES = {
-   'scrapy_redis.pipelines.RedisPipeline': 300
+   # 'scrapy_redis.pipelines.RedisPipeline': 300,
+   'paperSpider.pipelines.ElasticsearchPipeline': 1
 }
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
