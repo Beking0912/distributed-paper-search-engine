@@ -4,12 +4,36 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-import codecs
-from scrapy.exporters import JsonItemExporter
+# import codecs
+# from scrapy.exporters import JsonItemExporter
 from paperSpider.models.es_types import PaperType
+
+from elasticsearch_dsl.connections import connections
+
+es = connections.create_connection(PaperType._doc_type.using)
 
 
 # import MySQLdb
+
+
+def gen_suggests(index, info_tuple):
+    # 根据字符串生成搜索建议数组
+    used_words = set()
+    suggests = []
+    for text, weight in info_tuple:
+        if text:
+            # 调用 es 的 analyze 接口分析字符串
+            words = es.indices.analyze(index=index, analyzer="ik_max_word", params={'filter': ["lowercase"]}, body=text)
+            analyzed_words = set([r["token"] for r in words["tokens"] if len(r["token"]) > 1])
+            new_words = analyzed_words - used_words
+        else:
+            new_words = set()
+
+        if new_words:
+            suggests.append({"input": list(new_words), "weight": weight})
+            used_words = used_words.union(new_words)
+
+    return suggests
 
 
 class PaperspiderPipeline(object):
@@ -73,6 +97,9 @@ class ElasticsearchPipeline(object):
         paper.paper_source = item['paper_source']
         paper.paper_download_link = item['paper_download_link']
         paper.meta.id = item['paper_source']
+
+        paper.suggest = gen_suggests(PaperType._doc_type.index,
+                                     ((paper.paper_title, 10), (paper.paper_keywords, 7), (paper.paper_abstract, 5)))
 
         paper.save()
 
