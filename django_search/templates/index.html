@@ -64,7 +64,7 @@
 <script type="text/javascript" src="{% static 'js/global.js' %}"></script>
 <script type="text/javascript">
     var suggest_url = "{% url "suggest" %}"
-    var search_url = "/search/"
+    var search_url = "{% url "search" %}"
 
 
     $('.searchList').on('click', '.searchItem', function () {

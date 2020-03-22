@@ -1,12 +1,12 @@
 <!DOCTYPE html >
 <html xmlns="http://www.w3.org/1999/xhtml">
-
+{% load staticfiles %}
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7"/>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>搜索引擎</title>
-    <link href="css/style.css" rel="stylesheet" type="text/css"/>
-    <link href="css/result.css" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet" type="text/css"/>
+    <link href="{% static 'css/result.css' %}" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <div id="container">
@@ -15,7 +15,7 @@
             <div class="logo"></div>
         </a>
         <div class="inputArea">
-            <input type="text" class="searchInput" value="linux"/>
+            <input type="text" class="searchInput" value="{{ key_words }}"/>
             <input type="button" class="searchButton" onclick="add_search()"/>
         </div>
     </div>
@@ -28,42 +28,12 @@
     </div>
     <div id="bd" class="ue-clear">
         <div id="main" style="overflow: hidden">
-            <div class="sideBar">
-
-                <div class="subfield">网站</div>
-                <ul class="subfieldContext">
-                    <li>
-                        <span class="name">伯乐在线</span>
-                        <span class="unit">(None)</span>
-                    </li>
-                    <li>
-                        <span class="name">知乎</span>
-                        <span class="unit">(9862)</span>
-                    </li>
-                    <li>
-                        <span class="name">拉勾网</span>
-                        <span class="unit">(9862)</span>
-                    </li>
-                    <li class="more">
-                        <a href="javascript:;">
-                            <span class="text">更多</span>
-                            <i class="moreIcon"></i>
-                        </a>
-                    </li>
-                </ul>
-
-
-                <div class="sideBarShowHide">
-                    <a href="javascript:;" class="icon"></a>
-                </div>
-            </div>
+            <div class="sideBar"></div>
             <div class="historyArea">
                 <div class="hotSearch">
                     <h6>热门搜索</h6>
                     <ul class="historyList">
-
                         <li><a href="/search?q=linux">linux</a></li>
-
                     </ul>
                 </div>
                 <div class="mySearch">
@@ -80,416 +50,43 @@
                 </p>
                 <div class="resultList" style="float: left">
 
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/110058/" target="_blank" class="title">每天一个 <span
-                                    class="keyWord">Linux</span> 命令（58）： telnet 命令</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
+                    {% for hit in all_hits %}
+                        <div class="resultItem">
+                            <div class="itemHead">
+                                <a href="{{ hit.paper_source }}" target="_blank" class="title">
+                                    {% autoescape off %}
+                                    {{ hit.paper_title }}
+                                    {% endautoescape %}
+                                </a>
+                                <span class="divsion">-</span>
+                                <span class="fileType">
+                                    <a class="label" href="{{ hit.paper_source }}">[来源]</a>
                                 </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">3.401155</span>
+                                <span class="dependValue">
+                                    <span class="label">得分</span>
+                                    <span class="value">{{ hit.score }}</span>
                                 </span>
-                        </div>
-                        <div class="itemBody">
-                            的远程控制Web服务器的方法。
-                            但是，telnet因为采用明文传送报文，安全性不好，很多<span class="keyWord">Linux</span>服务器都不开放telnet服务，而改用更安全的ssh方式了。但仍然有很多别的系统可能采用了telnet方式
-                            is '^]'.
-                            localhost (<span class="keyWord">Linux</span> release 2.6.18-274.18.1.el5 #1 SMP Thu Feb 9
-                            12:45:44 EST 2012) (1)
-
-                            login).Escape character is '^]'.localhost (<span class="keyWord">Linux</span> release
-                            2.6.18-274.18.1.el5 #1 SMP Thu Feb 9 12:45:44 EST 2012登录，然后再用su -切到root用户。
-                            本系列文章：
-                            每天一个 <span class="keyWord">Linux</span> 命令（1）：ls命令
-                            每天一个 <span class="keyW
+                            </div>
+                            <div class="itemBody">
+                                {% autoescape off %}
+                                {{ hit.paper_abstract }}
+                                {% endautoescape %}
                             </div>
                             <div class=" itemFoot">
-                            <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
+                                <span class="info">
+                                    <span class="value">{{ hit.paper_time }}</span>
                                 </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
+                                <span class="info">
+                                    <label>被引用量</label>
+                                    <span class="value">{{ hit.paper_cite_count }}</span>
                                 </span>
-                        </div>
-                    </div>
-
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/109930/" target="_blank" class="title">3 个在 <span
-                                    class="keyWord">Linux</span> 中永久并安全删除文件和目录的方法</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
+                                <span class="info">
+                                    <label>DOI</label>
+                                    <span class="value">{{ hit.paper_DOI }}</span>
                                 </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">3.3210113</span>
-                                </span>
-                        </div>
-                        <div class="itemBody">
-                            安全系统的用户名和密码，具有必要知识和技能的攻击者可以轻松地恢复删除文件的副本并访问这些用户凭证（你可以猜测到这种情况的后果）。
-                            在本文中，我们将解释一些命令行工具，用于永久并安全地删除 <span class="keyWord">Linux</span>
-
-
-                            1
-
-                            $ man shred
-
-
-                            2、 wipe – 在 <span class="keyWord">Linux</span> 中安全删除文件
-                            wipe - 显示擦除进度
-
-
-                            wipe – 在 <span class="keyWord">Linux</span> 中安全擦除文件
-                            注意：wipe 仅可以在磁性存储上可以可靠地工作，因此对固态磁盘（内存）请使用其他
-
-
-                            1
-
-                            $ man wipe
-
-
-                            3、 <span class="
                             </div>
-                            <div class=" itemFoot">
-                            <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
-                                </span>
                         </div>
-                    </div>
-
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/110072/" target="_blank" class="title">每天一个 <span
-                                    class="keyWord">Linux</span> 命令（59）： rcp 命令</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">3.289159</span>
-                                </span>
-                        </div>
-                        <div class="itemBody">
-
-
-                            点 (.) 表示当前目录。将在此目录下创建 work 目录。
-                            本系列文章：
-                            每天一个 <span class="keyWord">Linux</span> 命令（1）：ls命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（2）：cd命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（3）：pwd命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（4）：mkdir命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（5）：rm 命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（6）：rmdir 命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（7）：mv命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（8）：cp 命令
-                            每天一个 <span class="
-                            </div>
-                            <div class=" itemFoot">
-                            <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
-                                </span>
-                        </div>
-                    </div>
-
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/108468/" target="_blank" class="title">25 个常用的 <span
-                                    class="keyWord">Linux</span> iptables 规则</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">2.8431149</span>
-                                </span>
-                        </div>
-                        <div class="itemBody">
-
-
-                            本文由 伯乐在线 - 伯小乐 翻译。未经许可，禁止转载！英文出处：gist。欢迎加入翻译组。一些常用的 <span class="keyWord">Linux</span>
-                            iptables 规则，请根据自己
-                        </div>
-                        <div class="itemFoot">
-                                <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
-                                </span>
-                        </div>
-                    </div>
-
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/109925/" target="_blank" class="title">每天一个 <span
-                                    class="keyWord">Linux</span> 命令（40）： wc 命令</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">2.8113704</span>
-                                </span>
-                        </div>
-                        <div class="itemBody">
-
-
-                            原文出处： peida <span class="keyWord">Linux</span>系统中的wc(Word
-                            Count)命令的功能为统计指定文件中的字节数、字数、行数，并将统计结果显示输出。
-                            1．
-
-                            ubuntu
-
-                            ubuntu <span class="keyWord">linux</span>
-
-                            redhat
-
-                            Redhat
-
-                            linuxmint
-
-                            [root@localhost test]# wc test.txt
-
-                            7 8
-
-                            [root@localhost test]# cat test.txt hnlinux peida.cnblogs.com ubuntu ubuntu <span
-                                class="keyWord">linux</span> redhat Redhat]#
-
-
-                            说明：
-                            数量中包含当前目录
-                            本系列文章：
-                            每天一个 <span class="keyWord">Linux</span> 命令（1）：ls命令
-                            每
-                        </div>
-                        <div class="itemFoot">
-                                <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
-                                </span>
-                        </div>
-                    </div>
-
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/110923/" target="_blank" class="title">千万千万不要运行的 <span
-                                    class="keyWord">Linux</span> 命令</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">2.8030472</span>
-                                </span>
-                        </div>
-                        <div class="itemBody">
-
-
-                            原文出处： <span class="keyWord">linux</span>中国
-                            文中列出的命令绝对不可以运行，即使你觉得很好奇也不行，除非你是在虚拟机上运行（出现问题你可以还原），因为它们会实实在在的破坏你的系统。所以不在root等高级管理权限下执行命令是很好的习惯。
-                            早晚有一天，<span class="keyWord">Linux</span> 系统会像 Windows
-                            那样流行，用的人越来越多，包括对计算机不是很了解的人，本文的目的就是告诉大家：在 <span class="keyWord">Linux</span>
-                            给你最大程度自由度的同时，也使得破坏系统变得更加容易，如果你不了解某些命令的意义，下载执行包含恶意命令的脚本，或者被骗运行某些命令，很容易让你哭 都来不及。
-                            这并不是说明 <span class="keyWord">Linux</span> 不安全，只是说明在不了解 <span class="keyWord">Linux</span>
-                            ，和很不小心的人面前，<span class="keyWord">Linux
-                        </div>
-                        <div class="itemFoot">
-                                <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
-                                </span>
-                        </div>
-                    </div>
-
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/110046/" target="_blank" class="title">每天一个 <span
-                                    class="keyWord">Linux</span> 命令（57）： ss 命令</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">2.7883716</span>
-                                </span>
-                        </div>
-                        <div class="itemBody">
-                            。ss快的秘诀在于，它利用到了TCP协议栈中tcp_diag。tcp_diag是一个用于分析统计的模块，可以获得<span class="keyWord">Linux</span>
-                            内核中第一手的信息，这就确保了ss的快捷高效。当然，如果你的系统中没有time
-                            命令分别获取通过netstat和ss命令获取程序和概要占用资源所使用的时间。在服务器连接数比较多的时候，netstat的效率完全没法和ss比。
-                            本系列文章：
-                            每天一个 <span class="keyWord">Linux</span> 命令（1）：ls命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（2）：cd命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（3）：pwd命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（4）：mkdir命令
-                            每天一个 <span class="keyWord">Linux</span> 命令（5）：rm 命令
-                            每天一个 <span class="keyWord">Lin
-                        </div>
-                        <div class="itemFoot">
-                                <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
-                                </span>
-                        </div>
-                    </div>
-
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/109970/" target="_blank" class="title">每天一个 <span
-                                    class="keyWord">Linux</span> 命令（46）： vmstat 命令</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">2.752004</span>
-                                </span>
-                        </div>
-                        <div class="itemBody">
-                            ，你需要查看并监控系统的健康情况,在控制窗口还是能够使用vmstat 输出结果。在学习vmstat命令前，我们先了解一下<span
-                                class="keyWord">Linux</span>系统中关于物理内存和虚拟内存相关信息。
-                            物理内存和虚拟内存区别：
-                            我们，是真正的内存，相对于物理内存，在<span class="keyWord">linux</span>下还有一个虚拟内存的概念，虚拟内存就是为了满足物理内存的不足而提出的策略，它是利用磁盘空间虚拟出的一块逻辑内存，用作虚拟内存的磁盘空间被称为交换空间（Swap
-                            Space）。
-                            作为物理内存的扩展，<span class="keyWord">linux</span>会在物理内存不足时，使用交换分区的虚拟内存，更详细的说，就是内核会将暂时不用的内存块信息写到交换空间，这样以来，物理内存得到了释放，这块内存就可以用于其它目的，当需要用到原始的内容时，这些信息会被重新从交换空间读入物理内存。
-                            <span class="keyWord">linux</span>的内存管理采取的是分页存取机制，为了保证物理内存能得到充分的利用，内核会在适当的时
-                        </div>
-                        <div class="itemFoot">
-                                <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
-                                </span>
-                        </div>
-                    </div>
-
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/110739/" target="_blank" class="title"><span
-                                    class="keyWord">Linux</span> 命令行工具使用小贴士及技巧（1）</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">2.6418023</span>
-                                </span>
-                        </div>
-                        <div class="itemBody">
-
-
-                            原文出处： Ansh 译文出处：<span class="keyWord">Linux</span>中国-rusking 如果你刚开始在 <span class="keyWord">Linux</span>
-                            系统中使用命令行工具，那么你应该知道它是 <span class="keyWord">Linux</span> 版本是 bash 4.3.11 。
-
-                            <span class="keyWord">Linux</span> 命令行工具使用的一些小技巧
-                            我们假设你已经掌握了一些 <span class="keyWord">Linux</span> 命令行的基础知识，比如什么是 root 账号及 home 目录，什么是环境变量，如何 。
-                            总结
-                            遗憾的是，这篇文章仅包含了一个跟命令行相关的小技巧，但是，我们已经地对 cd - 命令的使用进行了深入地探讨。建议你在自己的 <span
-                                class="keyWord">Linux</span> 系统的命令行终端中测试本文中的实例。此外，也强烈建议
-                        </div>
-                        <div class="itemFoot">
-                                <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
-                                </span>
-                        </div>
-                    </div>
-
-                    <div class="resultItem">
-                        <div class="itemHead">
-                            <a href="http://blog.jobbole.com/110773/" target="_blank" class="title">10 个常见的 <span
-                                    class="keyWord">Linux</span> 终端仿真器</a>
-                            <span class="divsion">-</span>
-                            <span class="fileType">
-                                    <span class="label">来源：</span>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="dependValue">
-                                    <span class="label">得分：</span>
-                                    <span class="value">2.6270468</span>
-                                </span>
-                        </div>
-                        <div class="itemBody">
-
-
-                            原文出处： Mohd Sohail 译文出处：ucasFL 对于 <span class="keyWord">Linux</span>
-                            用户来说，最重要的应用程序之一就是终端仿真器。它允许每个用户获得对 shell 的访问。而 Bash 是 <span class="keyWord">Linux</span> 和
-                            UNIX 发行版中最常用的 shell，它很强大，对于新手和高级用户来说，掌握 bash 都很有必要。因此，在这篇文章中，你可以了解 <span class="keyWord">Linux</span>;lang=en
-                            5、XTerm
-                            Xterm 是 <span class="keyWord">Linux</span> 和 UNIX 系统上最受欢迎的终端仿真器，因为它是 X
-                            窗口系统的默认终端仿真器，并且很轻量、很简单。
-
-                            6、Eterm
-                            如果你正在寻找一个自由交到用户手中。
-
-                            主页： http://www.eterm.org/
-                            7、Gnome Terminal
-                            Gnome Terminal 是最受欢迎的终端仿真器之一，
-                        </div>
-                        <div class="itemFoot">
-                                <span class="info">
-                                    <label>网站：</label>
-                                    <span class="value">伯乐在线</span>
-                                </span>
-                            <span class="info">
-                                    <label>发布时间：</label>
-                                    <span class="value">2017-04-23</span>
-                                </span>
-                        </div>
-                    </div>
+                    {% endfor %}
 
                 </div>
                 <!-- 分页 -->
@@ -505,11 +102,11 @@
 
 <div id="foot">Copyright &copy;projectsedu.com 版权所有 E-mail:admin@projectsedu.com</div>
 </body>
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript" src="js/global.js"></script>
-<script type="text/javascript" src="js/pagination.js"></script>
+<script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/global.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/pagination.js' %}"></script>
 <script type="text/javascript">
-    var search_url = "/search/"
+    var search_url = "{% url 'search' %}"
 
     $('.searchList').on('click', '.searchItem', function () {
         $('.searchList .searchItem').removeClass('current');
@@ -579,8 +176,8 @@
             $('#container').height($(window).height() - 33);
         }
     }
-</script>
-<script type="text/javascript">
+{#</script>#}
+{#<script type="text/javascript">#}
     $('.searchList').on('click', '.searchItem', function () {
         $('.searchList .searchItem').removeClass('current');
         $(this).addClass('current');
@@ -599,8 +196,8 @@
     });
 
     hideElement($('.dataList'), $('.searchInput'));
-</script>
-<script>
+{#</script>#}
+{#<script>#}
     var searchArr;
     //定义一个search的，判断浏览器有无数据存储（搜索历史）
     if (localStorage.search) {
