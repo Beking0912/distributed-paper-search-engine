@@ -99,7 +99,7 @@ class ElasticsearchPipeline(object):
         paper.meta.id = item['paper_source']
 
         paper.suggest = gen_suggests(PaperType._doc_type.index,
-                                     ((paper.paper_title, 10), (paper.paper_keywords, 7), (paper.paper_abstract, 5)))
+                                     ((paper.paper_title, 10), (paper.paper_keywords, 5), (paper.paper_abstract, 2)))
 
         paper.save()
 

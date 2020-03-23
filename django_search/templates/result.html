@@ -45,8 +45,8 @@
             </div>
             <div class="resultArea">
                 <p class="resultTotal">
-                    <span class="info">找到约&nbsp;<span class="totalResult">45</span>&nbsp;条结果(用时<span class="time">0.643128</span>秒)，共约<span
-                            class="totalPage">5</span>页</span>
+                    <span class="info">找到约&nbsp;<span class="totalResult">{{ total_nums }}</span>&nbsp;条结果(用时<span class="time">{{ last_seconds }}</span>秒)，共约<span
+                            class="totalPage">{{ page_nums }}</span>页</span>
                 </p>
                 <div class="resultList" style="float: left">
 
@@ -176,8 +176,8 @@
             $('#container').height($(window).height() - 33);
         }
     }
-{#</script>#}
-{#<script type="text/javascript">#}
+</script>
+<script type="text/javascript">
     $('.searchList').on('click', '.searchItem', function () {
         $('.searchList .searchItem').removeClass('current');
         $(this).addClass('current');
@@ -196,8 +196,8 @@
     });
 
     hideElement($('.dataList'), $('.searchInput'));
-{#</script>#}
-{#<script>#}
+</script>
+<script type="text/javascript">
     var searchArr;
     //定义一个search的，判断浏览器有无数据存储（搜索历史）
     if (localStorage.search) {
