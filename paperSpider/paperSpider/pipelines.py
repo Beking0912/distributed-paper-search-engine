@@ -6,12 +6,14 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # import codecs
 # from scrapy.exporters import JsonItemExporter
+import redis
 from paperSpider.models.es_types import PaperType
 
 from elasticsearch_dsl.connections import connections
 
 es = connections.create_connection(PaperType._doc_type.using)
 
+redis_cli = redis.StrictRedis()
 
 # import MySQLdb
 
@@ -102,5 +104,6 @@ class ElasticsearchPipeline(object):
                                      ((paper.paper_title, 10), (paper.paper_keywords, 5), (paper.paper_abstract, 2)))
 
         paper.save()
+        redis_cli.incr("baidu_count")
 
         return item

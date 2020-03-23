@@ -17,23 +17,35 @@
         <div class="inputArea">
             <input type="text" class="searchInput" value="{{ key_words }}"/>
             <input type="button" class="searchButton" onclick="add_search()"/>
+            <ul class="dataList"></ul>
         </div>
     </div>
-    <div class="nav">
-        <ul class="searchList">
-            <li class="searchItem current" data-type="article">文章</li>
-            <li class="searchItem" data-type="question">问答</li>
-            <li class="searchItem" data-type="job">职位</li>
-        </ul>
-    </div>
+    {#    <div class="nav">#}
+    {#        <ul class="searchList">#}
+    {#            <li class="searchItem current" data-type="article">文章</li>#}
+    {#            <li class="searchItem" data-type="question">问答</li>#}
+    {#            <li class="searchItem" data-type="job">职位</li>#}
+    {#        </ul>#}
+    {#    </div>#}
     <div id="bd" class="ue-clear">
         <div id="main" style="overflow: hidden">
-            <div class="sideBar"></div>
+            <div class="sideBar">
+                <div class="subfield">总数据量</div>
+                <ul class="subfieldContext">
+                    <li>
+                        <span class="name">爬虫爬取</span>
+                        <span class="unit">{{ baidu_count }}</span>
+                    </li>
+                </ul>
+
+            </div>
             <div class="historyArea">
                 <div class="hotSearch">
                     <h6>热门搜索</h6>
                     <ul class="historyList">
-                        <li><a href="/search?q=linux">linux</a></li>
+                        {% for search_word in topn_search %}
+                            <li><a href="/search?q={{ search_word }}">{{ search_word }}</a></li>
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="mySearch">
@@ -45,7 +57,8 @@
             </div>
             <div class="resultArea">
                 <p class="resultTotal">
-                    <span class="info">找到约&nbsp;<span class="totalResult">{{ total_nums }}</span>&nbsp;条结果(用时<span class="time">{{ last_seconds }}</span>秒)，共约<span
+                    <span class="info">找到约&nbsp;<span class="totalResult">{{ total_nums }}</span>&nbsp;条结果(用时<span
+                            class="time">{{ last_seconds }}</span>秒)，共约<span
                             class="totalPage">{{ page_nums }}</span>页</span>
                 </p>
                 <div class="resultList" style="float: left">
@@ -55,7 +68,7 @@
                             <div class="itemHead">
                                 <a href="{{ hit.paper_source }}" target="_blank" class="title">
                                     {% autoescape off %}
-                                    {{ hit.paper_title }}
+                                        {{ hit.paper_title }}
                                     {% endautoescape %}
                                 </a>
                                 <span class="divsion">-</span>
@@ -67,14 +80,26 @@
                                     <span class="value">{{ hit.score }}</span>
                                 </span>
                             </div>
+                            <div class="itemBody_writer">
+                                {% for writer in hit.paper_writer %}
+                                    <span class="writers">{{ writer }},</span>
+                                {% endfor %}
+                            </div>
                             <div class="itemBody">
                                 {% autoescape off %}
-                                {{ hit.paper_abstract }}
+                                    {{ hit.paper_abstract }}
                                 {% endautoescape %}
+                            </div>
+                            <div class="itemBody_keywords">
+                                {% for keywords in hit.paper_keywords %}
+                                    {% autoescape off %}
+                                    <span class="keywords">{{ keywords }}</span>
+                                    {% endautoescape %}
+                                {% endfor %}
                             </div>
                             <div class=" itemFoot">
                                 <span class="info">
-                                    <span class="value">{{ hit.paper_time }}</span>
+                                    <span class="value">{{ hit.paper_time }}年</span>
                                 </span>
                                 <span class="info">
                                     <label>被引用量</label>
@@ -99,8 +124,6 @@
         </div><!-- End of main -->
     </div><!--End of bd-->
 </div>
-
-<div id="foot">Copyright &copy;projectsedu.com 版权所有 E-mail:admin@projectsedu.com</div>
 </body>
 <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/global.js' %}"></script>
@@ -113,10 +136,6 @@
         $(this).addClass('current');
     });
 
-    $.each($('.subfieldContext'), function (i, item) {
-        $(this).find('li:gt(2)').hide().end().find('li:last').show();
-    });
-
     function removeByValue(arr, val) {
         for (var i = 0; i < arr.length; i++) {
             if (arr[i] == val) {
@@ -126,33 +145,7 @@
         }
     }
 
-    $('.subfieldContext .more').click(function (e) {
-        var $more = $(this).parent('.subfieldContext').find('.more');
-        if ($more.hasClass('show')) {
 
-            if ($(this).hasClass('define')) {
-                $(this).parent('.subfieldContext').find('.more').removeClass('show').find('.text').text('自定义');
-            } else {
-                $(this).parent('.subfieldContext').find('.more').removeClass('show').find('.text').text('更多');
-            }
-            $(this).parent('.subfieldContext').find('li:gt(2)').hide().end().find('li:last').show();
-        } else {
-            $(this).parent('.subfieldContext').find('.more').addClass('show').find('.text').text('收起');
-            $(this).parent('.subfieldContext').find('li:gt(2)').show();
-        }
-
-    });
-
-    $('.sideBarShowHide a').click(function (e) {
-        if ($('#main').hasClass('sideBarHide')) {
-            $('#main').removeClass('sideBarHide');
-            $('#container').removeClass('sideBarHide');
-        } else {
-            $('#main').addClass('sideBarHide');
-            $('#container').addClass('sideBarHide');
-        }
-
-    });
     var key_words = "{{key_words}}"
     //分页
     $(".pagination").pagination({{ total_nums }}, {
@@ -178,26 +171,6 @@
     }
 </script>
 <script type="text/javascript">
-    $('.searchList').on('click', '.searchItem', function () {
-        $('.searchList .searchItem').removeClass('current');
-        $(this).addClass('current');
-    });
-
-    // 联想下拉显示隐藏
-    $('.searchInput').on('focus', function () {
-        $('.dataList').show()
-    });
-
-    // 联想下拉点击
-    $('.dataList').on('click', 'li', function () {
-        var text = $(this).text();
-        $('.searchInput').val(text);
-        $('.dataList').hide()
-    });
-
-    hideElement($('.dataList'), $('.searchInput'));
-</script>
-<script type="text/javascript">
     var searchArr;
     //定义一个search的，判断浏览器有无数据存储（搜索历史）
     if (localStorage.search) {
@@ -221,7 +194,7 @@
             MapSearchArr();
         }
 
-        window.location.href = search_url + '?q=' + val + "&s_type=" + $(".searchItem.current").attr('data-type')
+        window.location.href = search_url + '?q=' + val
 
     }
 
@@ -254,5 +227,55 @@
             searchArr.unshift(val)
         }
     }
+</script>
+<script type="text/javascript">
+    var suggest_url = "{% url "suggest" %}"
+    var search_url = "{% url "search" %}"
+
+
+    $('.searchList').on('click', '.searchItem', function () {
+        $('.searchList .searchItem').removeClass('current');
+        $(this).addClass('current');
+    });
+
+    function removeByValue(arr, val) {
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] == val) {
+                arr.splice(i, 1);
+                break;
+            }
+        }
+    }
+
+
+    // 搜索建议
+    $(function () {
+        $('.searchInput').bind(' input propertychange ', function () {
+            var searchText = $(this).val();
+            var tmpHtml = ""
+            $.ajax({
+                cache: false,
+                type: 'get',
+                dataType: 'json',
+                url: suggest_url + "?s=" + searchText,
+                async: true,
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        tmpHtml += '<li><a href="' + search_url + '?q=' + data[i] + '">' + data[i] + '</a></li>'
+                    }
+                    $(".dataList").html("")
+                    $(".dataList").append(tmpHtml);
+                    if (data.length == 0) {
+                        $('.dataList').hide()
+                    } else {
+                        $('.dataList').show()
+                    }
+                }
+            });
+        });
+    })
+
+    hideElement($('.dataList'), $('.searchInput'));
+
 </script>
 </html>

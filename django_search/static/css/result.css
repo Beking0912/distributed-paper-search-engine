@@ -2,11 +2,11 @@
 html{*overflow:auto;}
 #hd{padding:20px 10px;}
 #bd{margin-bottom:40px;}
-.logo{float:left;margin-right:30px; height:33px;}
+.logo{float:left;margin-right:30px; height:70px;}
 /*input搜索区域*/
 .inputArea{float:left;position:relative;}
-.inputArea .searchInput{border:1px solid #bfbfbf;padding:0 15px;outline:none;height:35px;*line-height:35px;width:350px; background:url(../img/inputbg.png);font-size:14px;}
-.inputArea .searchButton{position:absolute;left:382px;top:0;*top:1px;*left:381px;width:106px;height:38px;background:url(../img/btn_min.png) no-repeat;border:none;cursor:pointer;}
+.inputArea .searchInput{border-radius: 5rem;border:1px solid #bfbfbf;padding:0 15px;outline:none;height:35px;*line-height:35px;width:520px; background:url(../img/inputbg.png);font-size:14px;}
+.inputArea .searchButton{position:absolute;left:560px;top:3px;*top:2px;*left:560px;width:40px;height:40px;background:url(../img/btn_min.png) no-repeat;border:none;cursor:pointer;}
 
 /*返回高级搜索*/
 .inputArea .advanced{position:absolute;font-size:14px;left:500px;top:12px;width:60px;text-decoration:underline;}
@@ -58,16 +58,16 @@ html{*overflow:auto;}
 .resultArea .resultList{padding-left:30px;}
 .resultArea .resultList .resultItem{margin-bottom:20px;}
 .resultArea .resultList .resultItem{margin-bottom:30px;}
-.resultArea .resultList .itemHead{margin-bottom:5px;color:#767676;} 
-.resultArea .resultList .itemHead .keyWord{color:#d90909;}
-.resultArea .resultList .itemBody .keyWord{color:#d90909;}
-.resultArea .resultList .itemHead a.title{font-size:16px;color:#0080cc;text-decoration:underline;}
+.resultArea .resultList .itemHead{margin-bottom:5px;color:#767676;}
+.resultArea .resultList .itemHead .keyWord{color:#c00;}
+.resultArea .resultList .itemBody .keyWord{color:#c00;}
+.resultArea .resultList .itemHead a.title{font-size:18px;color:#001ba0;text-decoration:none;}
 .resultArea .resultList .itemHead .value{color:#008000;}
 .resultArea .resultList .itemHead .divsion{margin:0 5px;}
 .resultArea .resultList .itemHead .fileType{margin-right:10px;}
 
 /*搜索内容主体*/
-.resultArea .resultList .itemBody{margin-bottom:5px;line-height:18px;width:90%;}
+.resultArea .resultList .itemBody{font-size:12px;margin-bottom:5px;line-height:18px;width:90%;}
 .resultArea .resultList .itemFoot{color:#008000;}
 .resultArea .resultList .itemFoot .info{margin-right:10px;}
 
@@ -101,4 +101,10 @@ html{*overflow:auto;}
 .inputArea .dataList li{padding:2px 15px;font-size:14px;}
 .inputArea .dataList li:hover{background:#f0f0f0;color:#0080cc;font-weight:bold;}
 
+
+
+.writers{color: #888;font-size: 12px;margin-right: 4px; }
+.itemBody_writer{font-size: 12px; margin-bottom: 2px}
+.itemBody_keywords{ margin-top: 10px;margin-bottom: 10px}
+.keywords{font-size: 12px; color: #333; background-color: #f7f7f7; margin: 4px; padding: 4px}
 

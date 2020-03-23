@@ -15,37 +15,23 @@
             <h1 class="title">
                 <div class="logo large"></div>
             </h1>
-            <div class="nav ue-clear">
-                <ul class="searchList">
-                    <li class="searchItem current" data-type="article">文章</li>
-                    <li class="searchItem" data-type="question">问答</li>
-                    <li class="searchItem" data-type="job">职位</li>
-                </ul>
-            </div>
             <div class="inputArea">
                 <input type="text" class="searchInput"/>
                 <input type="button" class="searchButton" onclick="add_search()"/>
-                <ul class="dataList">
-                    <li>如何学好设计</li>
-                    <li>界面设计</li>
-                    <li>UI设计培训要多少钱</li>
-                    <li>设计师学习</li>
-                    <li>哪里有好的网站</li>
-                </ul>
+                <ul class="dataList"></ul>
             </div>
 
             <div class="historyArea">
                 <p class="history">
                     <label>热门搜索：</label>
-
+                    {% for search_word in topn_search %}
+                        <a href="/search?q={{ search_word }}">{{ search_word }}</a>
+                    {% endfor %}
                 </p>
                 <p class="history mysearch">
                     <label>我的搜索：</label>
                     <span class="all-search">
-                        <a href="javascript:;">专注界面设计网站</a>
-                        <a href="javascript:;">用户体验</a>
-                        <a href="javascript:;">互联网</a>
-                        <a href="javascript:;">资费套餐</a>
+                        <a href="javascript:;"></a>
                     </span>
 
                 </p>
@@ -53,11 +39,6 @@
         </div><!-- End of main -->
     </div><!--End of bd-->
 
-    <div class="foot">
-        <div class="wrap">
-            <div class="copyright">Copyright &copy;uimaker.com 版权所有 E-mail:admin@uimaker.com</div>
-        </div>
-    </div>
 </div>
 </body>
 <script type="text/javascript" src="{% static 'js/jquery.js' %}"></script>
@@ -91,7 +72,7 @@
                 cache: false,
                 type: 'get',
                 dataType: 'json',
-                url: suggest_url + "?s=" + searchText + "&s_type=" + $(".searchItem.current").attr('data-type'),
+                url: suggest_url + "?s=" + searchText,
                 async: true,
                 success: function (data) {
                     for (var i = 0; i < data.length; i++) {

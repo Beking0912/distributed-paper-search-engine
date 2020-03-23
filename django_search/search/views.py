@@ -4,10 +4,19 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic.base import View
 from elasticsearch import Elasticsearch
+import redis
 
 from search.models import PaperType
 
 client = Elasticsearch(hosts=["127.0.0.1"])
+
+redis_cli = redis.StrictRedis(charset='utf-8', decode_responses=True)
+
+
+class IndexView(View):
+    def get(self, request):
+        topn_search = redis_cli.zrevrangebyscore("search_keywords_set", "+inf", "-inf", start=0, num=5)
+        return render(request, "index.html", {"topn_search": topn_search})
 
 
 class SearchSuggest(View):
@@ -31,11 +40,18 @@ class SearchSuggest(View):
 class SearchView(View):
     def get(self, request):
         key_words = request.GET.get('q', '')
+        # s_type = request.GET.get('s_type', 'article')
+
+        redis_cli.zincrby("search_keywords_set", 1, key_words)
+        topn_search = redis_cli.zrevrangebyscore("search_keywords_set", "+inf", "-inf", start=0, num=5)
+
         page = request.GET.get("q", "1")
         try:
             page = int(page)
         except:
             page = 1
+
+        baidu_count = redis_cli.get("baidu_count")
 
         start_time = datetime.now()
         response = client.search(
@@ -54,7 +70,8 @@ class SearchView(View):
                     "post_tags": ['</span>'],
                     "fields": {
                         "paper_title": {},
-                        "paper_abstract": {}
+                        "paper_abstract": {},
+                        "paper_keywords": {}
                     }
                 }
             }
@@ -83,13 +100,22 @@ class SearchView(View):
                 else:
                     hit_dict["paper_abstract"] = hit["_source"]["paper_abstract"][:500]
 
+                if "paper_keywords" in hit["highlight"]:
+                    hit_dict["paper_keywords"] = hit["highlight"]["paper_keywords"]
+                else:
+                    if "paper_keywords" in hit["_source"]:
+                        hit_dict["paper_keywords"] = hit["_source"]["paper_keywords"]
+
             hit_dict["paper_writer"] = hit["_source"]["paper_writer"]
             hit_dict["paper_time"] = hit["_source"]["paper_time"]
             hit_dict["paper_cite_count"] = hit["_source"]["paper_cite_count"]
             hit_dict["paper_source"] = hit["_source"]["paper_source"]
-            # hit_dict["paper_keywords"] = hit["_source"]["paper_keywords"]
+
             hit_dict["paper_DOI"] = hit["_source"]["paper_DOI"]
-            # hit_dict["paper_download_link"] = hit["_source"]["paper_download_link"]
+
+            if "paper_download_link" in hit["_source"]:
+                hit_dict["paper_download_link"] = hit["_source"]["paper_download_link"]
+
             hit_dict["score"] = hit["_score"]
 
             hit_list.append(hit_dict)
@@ -99,5 +125,7 @@ class SearchView(View):
                                                "key_words": key_words,
                                                "total_nums": total_nums,
                                                "page_nums": page_nums,
-                                               "last_seconds": last_seconds})
+                                               "last_seconds": last_seconds,
+                                               "baidu_count": baidu_count,
+                                               "topn_search": topn_search})
 
