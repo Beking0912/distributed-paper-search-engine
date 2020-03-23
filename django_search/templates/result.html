@@ -20,13 +20,6 @@
             <ul class="dataList"></ul>
         </div>
     </div>
-    {#    <div class="nav">#}
-    {#        <ul class="searchList">#}
-    {#            <li class="searchItem current" data-type="article">文章</li>#}
-    {#            <li class="searchItem" data-type="question">问答</li>#}
-    {#            <li class="searchItem" data-type="job">职位</li>#}
-    {#        </ul>#}
-    {#    </div>#}
     <div id="bd" class="ue-clear">
         <div id="main" style="overflow: hidden">
             <div class="sideBar">
@@ -37,6 +30,9 @@
                         <span class="unit">{{ baidu_count }}</span>
                     </li>
                 </ul>
+                <div class="sideBarShowHide">
+                    <a href="javascript:;" class="icon"></a>
+                </div>
 
             </div>
             <div class="historyArea">
@@ -82,7 +78,7 @@
                             </div>
                             <div class="itemBody_writer">
                                 {% for writer in hit.paper_writer %}
-                                    <span class="writers">{{ writer }},</span>
+                                    <span class="writers">{{ writer }}</span>
                                 {% endfor %}
                             </div>
                             <div class="itemBody">
@@ -90,11 +86,13 @@
                                     {{ hit.paper_abstract }}
                                 {% endautoescape %}
                             </div>
-                            <div class="itemBody_keywords">
-                                {% for keywords in hit.paper_keywords %}
+                            <div class="itemBody itemBody_keywords">
+                                {% for word in hit.paper_keywords %}
+                                    <span class="keywords">
                                     {% autoescape off %}
-                                    <span class="keywords">{{ keywords }}</span>
+                                        {{ word }}
                                     {% endautoescape %}
+                                    </span>
                                 {% endfor %}
                             </div>
                             <div class=" itemFoot">
@@ -109,6 +107,14 @@
                                     <label>DOI</label>
                                     <span class="value">{{ hit.paper_DOI }}</span>
                                 </span>
+                                <span class="hideDownloead">
+                                    <a href="javascript:;" class="download">下载地址 ></a>
+                                    <span class="links showDownloead">
+                                        {% for link in hit.paper_download_link %}
+                                            <a class="clickLink" href="{{ link }}">点击下载</a>
+                                        {% endfor %}
+                                    </span>
+                                </span>
                             </div>
                         </div>
                     {% endfor %}
@@ -117,10 +123,7 @@
                 <!-- 分页 -->
                 <div class="pagination ue-clear"></div>
                 <!-- 相关搜索 -->
-
-
             </div>
-
         </div><!-- End of main -->
     </div><!--End of bd-->
 </div>
@@ -134,6 +137,7 @@
     $('.searchList').on('click', '.searchItem', function () {
         $('.searchList .searchItem').removeClass('current');
         $(this).addClass('current');
+
     });
 
     function removeByValue(arr, val) {
@@ -145,6 +149,16 @@
         }
     }
 
+    $('.sideBarShowHide a').click(function (e) {
+        if ($('#main').hasClass('sideBarHide')) {
+            $('#main').removeClass('sideBarHide');
+            $('#container').removeClass('sideBarHide');
+        } else {
+            $('#main').addClass('sideBarHide');
+            $('#container').addClass('sideBarHide');
+        }
+
+    });
 
     var key_words = "{{key_words}}"
     //分页
@@ -227,6 +241,14 @@
             searchArr.unshift(val)
         }
     }
+
+    $('.hideDownloead a').click(function (e) {
+        if ($(this).next().hasClass('showDownloead')) {
+            $(this).next().removeClass('showDownloead');
+        } else {
+            $(this).next().addClass('showDownloead');
+        }
+    });
 </script>
 <script type="text/javascript">
     var suggest_url = "{% url "suggest" %}"

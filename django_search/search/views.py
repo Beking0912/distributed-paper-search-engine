@@ -96,16 +96,15 @@ class SearchView(View):
                     hit_dict["paper_title"] = hit["_source"]["paper_title"]
 
                 if "paper_abstract" in hit["highlight"]:
-                    hit_dict["paper_abstract"] = "".join(hit["highlight"]["paper_abstract"])[:500]
+                    hit_dict["paper_abstract"] = "".join(hit["highlight"]["paper_abstract"])
                 else:
-                    hit_dict["paper_abstract"] = hit["_source"]["paper_abstract"][:500]
+                    hit_dict["paper_abstract"] = hit["_source"]["paper_abstract"]
 
                 if "paper_keywords" in hit["highlight"]:
                     hit_dict["paper_keywords"] = hit["highlight"]["paper_keywords"]
                 else:
                     if "paper_keywords" in hit["_source"]:
                         hit_dict["paper_keywords"] = hit["_source"]["paper_keywords"]
-
             hit_dict["paper_writer"] = hit["_source"]["paper_writer"]
             hit_dict["paper_time"] = hit["_source"]["paper_time"]
             hit_dict["paper_cite_count"] = hit["_source"]["paper_cite_count"]
@@ -114,7 +113,7 @@ class SearchView(View):
             hit_dict["paper_DOI"] = hit["_source"]["paper_DOI"]
 
             if "paper_download_link" in hit["_source"]:
-                hit_dict["paper_download_link"] = hit["_source"]["paper_download_link"]
+                hit_dict["paper_download_link"] = hit["_source"]["paper_download_link"][:5]
 
             hit_dict["score"] = hit["_score"]
 

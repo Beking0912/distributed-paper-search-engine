@@ -56,8 +56,8 @@ html{*overflow:auto;}
 
 /*搜索结果列表区域*/
 .resultArea .resultList{padding-left:30px;}
-.resultArea .resultList .resultItem{margin-bottom:20px;}
-.resultArea .resultList .resultItem{margin-bottom:30px;}
+/*.resultArea .resultList .resultItem{margin-bottom:20px;}*/
+.resultArea .resultList .resultItem{margin-bottom:20px;border-bottom: 1px solid #eee;}
 .resultArea .resultList .itemHead{margin-bottom:5px;color:#767676;}
 .resultArea .resultList .itemHead .keyWord{color:#c00;}
 .resultArea .resultList .itemBody .keyWord{color:#c00;}
@@ -68,7 +68,7 @@ html{*overflow:auto;}
 
 /*搜索内容主体*/
 .resultArea .resultList .itemBody{font-size:12px;margin-bottom:5px;line-height:18px;width:90%;}
-.resultArea .resultList .itemFoot{color:#008000;}
+.resultArea .resultList .itemFoot{color:#008000; margin-bottom: 20px;}
 .resultArea .resultList .itemFoot .info{margin-right:10px;}
 
 .resultArea .pagination{margin-bottom:25px;padding-left:32px;}
@@ -104,7 +104,10 @@ html{*overflow:auto;}
 
 
 .writers{color: #888;font-size: 12px;margin-right: 4px; }
-.itemBody_writer{font-size: 12px; margin-bottom: 2px}
-.itemBody_keywords{ margin-top: 10px;margin-bottom: 10px}
+.resultArea .resultList .itemBody_writer{font-size: 12px; margin-bottom: 2px}
+.resultArea .resultList .itemBody_keywords{ margin-top: 10px;margin-bottom: 10px;}
 .keywords{font-size: 12px; color: #333; background-color: #f7f7f7; margin: 4px; padding: 4px}
+.download{color: #001ba0;}
 
+.showDownloead{ visibility:hidden; }
+.clickLink{margin-left: 4px;}
