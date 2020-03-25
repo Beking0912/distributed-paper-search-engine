@@ -12,8 +12,9 @@ class BaiduSpider(scrapy.Spider):
     name = 'baidu'
     # redis_key = 'baidu:start_urls'
     allowed_domains = ['xueshu.baidu.com']
+    input_keyword = 'machine%20learning'
     start_urls = [
-        'http://xueshu.baidu.com/s?wd=machine+learning&rsv_bp=0&tn=SE_baiduxueshu_c1gjeupa&rsv_spt=3&ie=utf-8&f=8&rsv_sug2=1&sc_f_para=sc_tasktype%3D%7BfirstSimpleSearch%7D']
+        'http://xueshu.baidu.com/s?wd=machine%20learning&pn=0&tn=SE_baiduxueshu_c1gjeupa&ie=utf-8&sc_f_para=sc_tasktype%3D%7BfirstAdvancedSearch%7D&sc_hit=1']
 
     def parse(self, response):
         paper_nodes = response.xpath('//*[@class="sc_content"]')
@@ -21,9 +22,9 @@ class BaiduSpider(scrapy.Spider):
             paper_url = paper_node.css('h3 a::attr(href)').extract_first('')
             yield Request(url=parse.urljoin(response.url, paper_url), callback=self.parse_detail)
 
-        next_url = response.css('#page > a.n::attr(href)').extract_first('')
+        next_url = response.css('#page a:last-child::attr(href)').extract_first('')
         if next_url:
-            next_url = 'http://xueshu.baidu.com' + next_url
+            # next_url = 'http://xueshu.baidu.com' + next_url
             yield Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
 
     def parse_detail(self, response):
@@ -48,7 +49,6 @@ class BaiduSpider(scrapy.Spider):
         paper_time = format_word(paper_time)
 
         paper_download_link = response.css('#savelink_wr .dl_item_span a::attr(href)').extract()
-        # paper_download_link.remove('javascript:;')
 
         paper_item['paper_title'] = paper_title
         paper_item['paper_writer'] = paper_writer
