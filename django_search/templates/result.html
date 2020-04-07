@@ -23,10 +23,26 @@
     <div id="bd" class="ue-clear">
         <div id="main" style="overflow: hidden">
             <div class="sideBar">
-                <div class="subfield">总数据量</div>
+                <div class="subfield">排序条件</div>
+                <ul class="subfieldContext">
+                     <li>
+                        <a class="name" name="option" type="radio" value="score" href="/search?q={{ key_words }}"/> 按默认打分</a>
+                    </li>
+                    <li>
+                        <a class="name" name="option" type="radio" value="score" href="/search?q={{ key_words }}&option=date"/> 按发表时间</a>
+                    </li>
+                    <li>
+                        <a class="name" name="option" type="radio" value="score" href="/search?q={{ key_words }}&option=cite" /> 按被引用量</a>
+                    </li>
+                </ul>
+                <div class="subfield">数据统计</div>
                 <ul class="subfieldContext">
                     <li>
-                        <span class="name">爬虫爬取</span>
+                        <span class="name">爬虫已爬取</span>
+                        <span class="unit">{{ baidu_count }}</span>
+                    </li>
+                    <li>
+                        <span class="name">ES总数据量</span>
                         <span class="unit">{{ baidu_count }}</span>
                     </li>
                 </ul>
@@ -46,9 +62,7 @@
                 </div>
                 <div class="mySearch">
                     <h6>我的搜索</h6>
-                    <ul class="historyList">
-
-                    </ul>
+                    <ul class="historyList"></ul>
                 </div>
             </div>
             <div class="resultArea">
@@ -161,6 +175,7 @@
     });
 
     var key_words = "{{key_words}}"
+    var option_value = $("input[type='radio'][name='option']:checked").val();
     //分页
     $(".pagination").pagination({{ total_nums }}, {
         current_page:{{ page|add:'-1' }}, //当前页码
@@ -298,6 +313,15 @@
     })
 
     hideElement($('.dataList'), $('.searchInput'));
+
+</script>
+<script type="text/javascript">
+    function order_date() {
+        var option_value = $("input[type='radio'][name='option']:checked").val();
+        console.log(option_value)
+        {#window.location.href = search_url + '?q=' + key_words + '&option=' + option_value#}
+    }
+    order_date();
 
 </script>
 </html>

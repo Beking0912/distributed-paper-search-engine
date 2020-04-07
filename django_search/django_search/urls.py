@@ -14,13 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+# from django.urls import path
+# from django.views.generic import TemplateView
 from django.conf.urls import url
-from django.views.generic import TemplateView
 from search.views import SearchSuggest, SearchView, IndexView
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    # url(r'^admin/', admin.site.urls),
     url(r'^$', IndexView.as_view(), name="index"),
     url(r'^suggest/$', SearchSuggest.as_view(), name="suggest"),
     url(r'^search/$', SearchView.as_view(), name="search"),

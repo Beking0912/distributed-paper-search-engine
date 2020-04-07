@@ -23,8 +23,8 @@ class PaperType(DocType):
     suggest = Completion(analyzer=ik_analyzer)  # 用于自动补全
 
     paper_title = Text(analyzer="ik_max_word")
-    paper_writer = Text()
-    paper_time = Text()
+    paper_writer = Keyword()
+    paper_time = Integer()
     paper_cite_count = Integer()
     paper_source = Keyword()
     paper_abstract = Text(analyzer="ik_max_word")

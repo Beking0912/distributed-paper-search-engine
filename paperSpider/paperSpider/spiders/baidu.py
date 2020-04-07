@@ -14,7 +14,11 @@ class BaiduSpider(scrapy.Spider):
     allowed_domains = ['xueshu.baidu.com']
     input_keyword = 'machine%20learning'
     start_urls = [
-        'http://xueshu.baidu.com/s?wd=machine%20learning&pn=0&tn=SE_baiduxueshu_c1gjeupa&ie=utf-8&sc_f_para=sc_tasktype%3D%7BfirstAdvancedSearch%7D&sc_hit=1']
+        # 'http://xueshu.baidu.com/s?wd=machine%20learning&pn=0&tn=SE_baiduxueshu_c1gjeupa&ie=utf-8&sc_f_para=sc_tasktype%3D%7BfirstAdvancedSearch%7D&sc_hit=1'
+        # 'http://xueshu.baidu.com/s?wd=%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0&tn=SE_baiduxueshu_c1gjeupa&cl=3&ie=utf-8&bs=machine+learning&f=8&rsv_bp=1&rsv_sug2=0&sc_f_para=sc_tasktype%3D%7BfirstSimpleSearch%7D&rsv_spt=3'
+        # 'http://xueshu.baidu.com/s?wd=%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98&rsv_bp=0&tn=SE_baiduxueshu_c1gjeupa&rsv_spt=3&ie=utf-8&f=8&rsv_sug2=0&sc_f_para=sc_tasktype%3D%7BfirstSimpleSearch%7D'
+        'http://xueshu.baidu.com/s?wd=%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0&tn=SE_baiduxueshu_c1gjeupa&cl=3&ie=utf-8&bs=%E6%95%B0%E6%8D%AE%E6%8C%96%E6%8E%98&f=8&rsv_bp=1&rsv_sug2=0&sc_f_para=sc_tasktype%3D%7BfirstSimpleSearch%7D&rsv_spt=3'
+    ]
 
     def parse(self, response):
         paper_nodes = response.xpath('//*[@class="sc_content"]')
@@ -58,6 +62,6 @@ class BaiduSpider(scrapy.Spider):
         paper_item['paper_time'] = paper_time
         paper_item['paper_cite_count'] = paper_cite_count
         paper_item['paper_source'] = paper_source
-        paper_item['paper_download_link'] = paper_download_link
+        paper_item['paper_download_link'] = paper_download_link[:5]
 
         yield paper_item
