@@ -1,5 +1,7 @@
 # baidu_paper_spider
 
+I found an English version here: https://www.big-meter.com/opensource/en/603a71717be7f37d355802d5.html
+
 ## 技术选型 scrapy vs requests+beautifulsoup
 1. requests 和 beautifulsoup 都是库，scrapy 是框架；
 2. scrapy 框架中可以加入requests 和 beautifulsoup；
