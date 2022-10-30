@@ -1,6 +1,6 @@
 # Distributed Document Search Engine
 
-English version here: https://github.com/Beking0912/Distributed-Document-Search-Engine/blob/master/README.md
+[English version](https://github.com/Beking0912/Distributed-Document-Search-Engine/blob/master/README.md)
 
 ## 技术选型 scrapy vs requests+beautifulsoup
 1. requests 和 beautifulsoup 都是库，scrapy 是框架；
