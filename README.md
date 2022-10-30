@@ -1,5 +1,7 @@
 # Distributed Document Search Engine
 
+[中文版本](https://github.com/Beking0912/Distributed-Document-Search-Engine/blob/master/README_zh.MD)
+
 ## Technical selection scrapy vs requests+beautifulsoup
 1. Both requests and beautifulsoup are libraries, and scrapy is the framework;
 2. Requests and beautifulsoup can be added to the scrapy framework;
