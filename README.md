@@ -1,16 +1,14 @@
-# baidu_paper_spider
+# Distributed Document Search Engine
 
-English version here: https://www.big-meter.com/opensource/en/603a71717be7f37d355802d5.html
+## Technical selection scrapy vs requests+beautifulsoup
+1. Both requests and beautifulsoup are libraries, and scrapy is the framework;
+2. Requests and beautifulsoup can be added to the scrapy framework;
+3. Scrapy is based on twisted, performance is the biggest advantage;
+4. Scrapy is convenient for expansion and provides many built-in functions;
+5. The built-in css and xpath selector of scrapy is very convenient, and the biggest disadvantage of beautifulsoup is slow.
 
-## 技术选型 scrapy vs requests+beautifulsoup
-1. requests 和 beautifulsoup 都是库，scrapy 是框架；
-2. scrapy 框架中可以加入requests 和 beautifulsoup；
-3. scrapy 基于 twisted，性能是最大优势；
-4. scrapy 方便扩展，提供了很多内置的功能；
-5. scrapy 内置的 css 和 xpath selector 非常方便，beautifulsoup 最大的缺点就是慢。
-
-## 深度优先和广度优先
-深度优先（递归实现）
+## Depth first and breadth first
+Depth first (recursive implementation)
 ```python
 def depth_tree(tree_node):
     if tree_node is not None:
@@ -21,7 +19,7 @@ def depth_tree(tree_node):
             return depth_tree(tree_node._right)
 ```
 
-广度优先（队列实现）
+Breadth first (queue implementation)
 ```python
 def level_queue(root):
     if root is None:
@@ -38,109 +36,106 @@ def level_queue(root):
             my_queue.append(node.rchild)
 ```
 
-## URL去重策略
-1. 将访问过的URL保存到数据库中；
-2. 将访问过的URL保存到set中，只需要O(1)的代价就可以查询URL；
-3. URL经过md5等方法哈希后保存到set中；
-4. 用bitmap方法将访问过的URL通过hash函数映射到某一位；
-5. bloomfilter方法对bitmap进行改进，多重hash函数降低冲突。
+## URL deduplication strategy
+1. Save the visited URL in the database;
+2. Save the visited URL in the set, and query the URL only at the cost of O(1);
+3. The URL is saved in the set after being hashed by md5 and other methods;
+4. Use the bitmap method to map the visited URL to a certain bit through the hash function;
+5. The bloomfilter method improves bitmap, and multiple hash functions reduce conflicts.
 
-## 字符串编码 encode decode
-1. 计算机只能处理数字，文本转换为数字才能处理。计算机中8个bit作为一个字节，所以一个字节能表示最大的数字就是255；
-2. ASCII(一个字节)编码就成为美国人的标准编码；
-3. ASCII处理中文是不够的，中国制定了GB2312编码，用两个字节表示一个汉字；
-4. unicode的出现将所有语言统一到一套编码里；
-5. 乱码问题解决了，但是如果内容全是英文，unicode编码比ASCII需要多一倍的存储空间，同时如果传输需要多一倍的传输；
-6. 可变长的编码utf-8的出现，把英文变长一个字节，汉字三个字节。特别生僻的变成4-6字节，如果传输大量的英文，utf-8作用就很明显了。
+## String encoding encode decode
+1. Computers can only process numbers, and text can only be processed by converting text to numbers. 8 bits in the computer are regarded as a byte, so the largest number that a byte can represent is 255;
+2. ASCII (one byte) encoding has become the standard encoding for Americans;
+3. ASCII is not enough to handle Chinese. China has developed GB2312 encoding, which uses two bytes to represent a Chinese character;
+4. The emergence of unicode unifies all languages into a set of codes;
+5. The garbled problem is solved, but if the content is all in English, unicode encoding requires twice the storage space than ASCII, and at the same time, if the transmission requires twice the transmission;
+6. The emergence of variable-length encoding utf-8 has changed the length of English to one byte and Chinese characters to three bytes. Especially uncommon ones become 4-6 bytes. If a large amount of English is transmitted, the effect of utf-8 will be obvious.
 
 ## scrapy
-scrapy 是 Python 开发的一个快速高层次的屏幕抓取和web抓取框架，用于抓取web站点并从页面中提取结构化的数据。优点：高并发(底层是异步IO框架 时间循环+回调)。
+scrapy is a fast and high-level screen scraping and web scraping framework developed by Python to scrape web sites and extract structured data from pages. Advantages: high concurrency (the bottom layer is asynchronous IO frame time loop + callback).
+[Official document](https://docs.scrapy.org/en/latest/)
 
-[官方文档](https://docs.scrapy.org/en/latest/)
+1. download：`pip install Scrapy`
+2. new：`scrapy startproject namexxx`
 
-1. 下载：`pip install Scrapy`
-2. 新建：`scrapy startproject namexxx`
+## xpath syntax res.xpath('').extract_first('')
+1. xpath uses path expressions to navigate in xml and html;
+2. xpath contains standard function library;
+3. xpath is a w3c standard.
 
-## xpath 语法 res.xpath('').extract_first('')
-1. xpath 使用路径表达式在xml和html中进行导航；
-2. xpath 包含标准函数库；
-3. xpath 是一个w3c的标准。
+## Advantages of distributed crawlers
+1. Make full use of the bandwidth of multiple machines to accelerate crawling;
+2. Make full use of the IP of multiple machines to accelerate the crawling speed.
 
-## 分布式爬虫的优点
-1. 充分利用多机器的带宽加速爬取；
-2. 充分利用多机的IP加速爬取速度。
-
-## 单机爬虫 => 分布式爬虫 需要解决的问题
-1. request 队列集中管理：scheduler 以队列形式存储在内存中，而其他服务器无法拿到当前服务器内存中的内容；
-2. 去重集中管理。
-解决方法：将 request 队列和去重 放到第三方组件中，采用 Redis(内存数据库，读取速度更快)。
+## Stand-alone crawler => distributed crawlers problems that need to solve
+1. Centralized management of request queue: The scheduler is stored in memory in the form of a queue, and other servers cannot get the contents of the current server's memory;
+2. De-duplicate centralized management. Solution: Put the request queue and de-replay into third-party components, using Redis (memory database, faster reading speed).
 
 ## Redis
-Redis 是 key-value 存储系统，数据存在内存中。
+Redis is a key-value storage system, and data is stored in memory.
 
-## Redis 数据类型
-字符串 散列/哈希 列表 集合 可排序集合
+## Redis data type
+String hash/hash list collection, sortable collection
 
-## Scrapy-Redis 编写爬虫需要注意的点 
-1. 继承 RedisSpider；
-2. 所有 request 不再由本地 schedule 来完成，而是 Scrapy-Redis 的 schedule；
-3. 需要 push 起始 url。
+## needs to pay attention to writing crawlers using Scrapy-Redis
+1. Inherit RedisSpider;
+2. All requests are no longer completed by the local schedule, but the schedule of Scrapy-Redis;
+3. Need to push the starting url.
 
-## session 和 cookie 的区别
-1. cookie 以 key-value 形式存储
+## The difference between session and cookie
+1. Cookies are stored in the form of key-value
 
-## 下载包失败时
+## When downloading the package fails
 1. `pip install wheel`
 2. `pip install -r requirements.txt`
 
-## 集成 Redis
-## 集成 BloomFilter
+## Integrate Redis
+## Integrate BloomFilter
 
-## 爬虫的增量爬取
-1. 如何快速发现新的数据
-   1. 全量的爬虫仍然在继续
-      1. 重新启动一个爬虫：一个负责全量抓取，一个负责增量抓取
-      2. 采用优先级队列(利于维护)
-   2. 爬虫已结束
-      1. 爬虫已关闭
-         1. 如何发现已经有新的URL待抓取，一旦有URL则需要脚本启动爬虫
-      2. 爬虫等待：继续push URL
-2. 如何解决已经抓取过的数据(scrapy 自带去重机制)
-   1. 列表数据已经抓取过之后还要继续抓取
-   2. 已经抓取过的条目是否还要继续抓取(涉及更新问题)
+## Incremental crawling of crawlers
+1. How to quickly discover new data
+   1. The full amount of crawlers is still going on
+      1. Restart a crawler: one is responsible for full crawling, and the other is responsible for incremental crawling
+      2. Use priority queue (conducive to maintenance)
+   2. Crawler is over
+      1. Crawler is closed
+         1. How to find that there is a new URL to be crawled, once there is a URL, a script is required to start the crawler
+      2. Crawler waiting: continue to push URL
+2. How to solve the data that has been crawled (scrapy comes with a deduplication mechanism)
+   1. After the list data has been crawled, continue crawling
+   2. Whether to continue crawling the items that have been crawled (involving update issues)
+Optimal solution: Modify the scrapy-redis source code to achieve the goal.
 
-最优方案：修改 scrapy-redis 源码可以达到目的。
+## Complete incremental crawling by modifying scrapy-redis
 
-## 通过修改 scrapy-redis 完成增量爬取
+## Crawler data update
+Fields that will be updated: cited amount
 
-## 爬虫的数据更新
-会更新的字段：被引用量
+## Search engine requirements
+1. Efficient
+2. Zero configuration is completely free
+3. Able to interact with search engines simply through json and http
+4. Search server is stable
+5. Able to easily expand one server to hundreds
 
-## 搜索引擎需求
-1. 高效
-2. 零配置 完全免费
-3. 能够简单通过json和http与搜索引擎交互
-4. 搜索服务器稳定
-5. 能够简单的将一台服务器扩展到上百台
+## Introduction to elasticsearch
+1. Lucene-based search server
+2. Provides a full-text search engine with distributed multi-user capabilities
+3. Based on RESTful web interface
+4. Developed in Java and released as open source under the terms of the Apache license
 
-## elasticsearch 介绍
-1. 基于 Lucene 的搜索服务器
-2. 提供了一个分布式多用户能力的全文搜索引擎
-3. 基于 RESTful web 接口
-4. 是用 Java 开发的，并作为 Apache 许可条款下的开放源码发布
+## Disadvantages of relational data search
+1. Unable to score -> Unable to sort
+2. No distributed
+3. Unable to parse search request
+4. low efficiency
+5. Participle
 
-## 关系数据搜索缺点
-1. 无法打分 -> 无法排序
-2. 无分布式
-3. 无法解析搜索请求
-4. 效率低
-5. 分词
+## elasticsearch installation
+1. Install elasticsearch-rtf
+2. Installation of head plugin and kibana
 
-## elasticsearch 安装
-1. 安装 elasticsearch-rtf
-2. head 插件和 kibana 的安装
-
-## 跨域配置
+## Cross-domain configuration
 ```
 http.cors.enabled: true
 http:cors.allow-origin: "*"
@@ -148,83 +143,83 @@ http.cors.allow-methods: OPTIONS, HEAD, GET, POST, PUT, DELETE
 http.cors.allow-headers: "X-Requested-With, Content-Type, Content-Type, Content-Length, X-User"
 ```
 
-## elasticsearch 概念
-1. 集群：一个或多个节点组织在一起
-2. 节点：一个节点是集群中的一个服务器，由一个名字来标识，默认是一个随机的漫画角色的名字
-3. 分片：将索引划分为多份的能力，允许水平分割和扩展容量，多个分片响应请求，提高性能和吞吐量
-4. 副本：创建分片的一份或多份的能力，在一个节点失败时其余节点可以顶上
+## elasticsearch concept
+1. Cluster: One or more nodes are organized together
+2. Node: A node is a server in the cluster, identified by a name, the default is the name of a random comic character
+3. Fragmentation: The ability to divide the index into multiple parts, allowing horizontal partitioning and capacity expansion, multiple shards responding to requests, improving performance and throughput
+4. Replica: The ability to create one or more copies of a shard, and the rest of the nodes can be on top when one node fails
+
 
 ## elasticsearch vs mysql
-1. index(索引) => 数据库
-2. type(类型) => 表
-3. document(文档) => 行
-4. fields => 列
+1. index => database
+2. type => table
+3. document => line
+4. fields => columns
 
-## 倒排索引
-倒排索引源于实际应用中需要根据属性的值来查找记录。这种索引表中的每一项都包括一个属性值和具有该属性值的各记录的地址。由于不是由记录来确定属性值，而是由属性值来确定记录的位置，因而称为倒排索引(inverted index)。带有倒排索引的文简称倒排文件(inverted file)。
+## Inverted index
+The inverted index comes from the need to find records based on the value of attributes in practical applications. Each item in this index table includes an attribute value and the address of each record with the attribute value. Since the attribute value is not determined by the record, but the position of the record is determined by the attribute value, it is called an inverted index. A text with an inverted index is referred to as an inverted file.
 
 ## TF-IDF
 
-## 倒排索引待解决问题
-1. 大小写转换问题，如 python 和 PYTHON 应该为一个词
-2. 词干抽取，looking 和 look 应该处理为一个词
-3. 分词
-4. 倒排索引文件过大，压缩编码
+## Inverted index pending issues
+1. Case conversion issues, such as python and PYTHON should be a word
+2. Stemming, looking and look should be treated as one word
+3. Participle
+4. The inverted index file is too large, compression encoding
+Elasticsearch can complete all of the above problems.
 
-elasticsearch 可以全部完成以上问题。
+## elasticsearch basic index
 
-## elasticsearch 基本的索引
+## Mapping
+Mapping: When creating an index, you can predefine the field type and related attributes.
 
-## 映射(mapping)
-映射：创建索引时，可以预先定义字段的类型以及相关属性。
+ES will guess the field mapping you want based on the basic type of the JSON source data. Turn the entered data into searchable index items. Mapping is the data type of the field defined by my mother. It also tells es how to index the data and whether it can be searched.
 
-es会根据 JSON 源数据的基础类型猜测你想要的字段映射。将输入的数据转变为可搜索的索引项。mapping 就是我妈自己定义的字段的数据类型，同时告诉 es 如何索引数据以及是否可以被搜索。
+Role: It will make the index creation more detailed and perfect.
 
-作用：会让索引建立的更加细致和完善。
+## es query
+1. Basic query: use es built-in query conditions to query
+2. Combined query: Combine multiple queries together for compound query
+3. Filtering: the query passes the filter condition to filter the data without affecting the scoring
 
-## es 查询
-1. 基本查询：使用 es 内置查询条件进行查询
-2. 组合查询：把多个查询组合在一起进行复合查询
-3. 过滤：查询同时通过 filter 条件在不影响打分的情况下筛选数据
+## Edit distance
+Edit distance is a calculation method of similarity between strings. That is, the edit distance between two character strings is equal to the minimum number of operations for insert/delete/replace/swap positions of adjacent character strings to make one character string become another character string.
 
-## 编辑距离
-编辑距离是一种字符串之间相似程度的计算方法。即两个字符串之间的编辑距离等于使一个字符串变成另一个字符串而进行的 插入/删除/替换/相邻字符串交换位置 进行操作的最少次数。
+Regarding the calculation of edit distance, dynamic programming is commonly used.
 
-关于编辑距离的求法，普遍采用的是动态规划。
-
-## 环境迁移
+## Environment migration
 1. pip freeze > requirements.text
 2. pip install -r requirement.txt
 
-## 资料
+## References
 [Elasticsearch中ik_max_word和 ik_smart的区别](https://blog.csdn.net/weixin_44062339/article/details/85006948)
 
 [相关度评分背后的理论](https://www.elastic.co/guide/cn/elasticsearch/guide/current/scoring-theory.html)
 
 [Elasticsearch搜索中文分词优化](https://www.jianshu.com/p/914f102bc174)
 
-## Elasticsearch 中文搜索时遇到几个问题
-1. 检索葡萄糖关键字，希望结果仅包含葡萄糖，不包含葡萄；检索葡萄，希望结果包含葡萄糖。
-2. 搜索“RMB”时只会匹配到包含“RMB”关键词的内容，实际上，“RMB”和“人民币”是同义词，我们希望用户搜索“RMB”和“人民币”可以相互匹配，ES同义词怎么配置？
-3. 用户搜索拼音: 如"baidu",或者拼音首字母"bd",怎么匹配到"百度"这个关键词,又如用户输入"摆渡"这个词也能匹配到"百度"关键词,中文拼音匹配怎么做到?
-4. 怎么保证搜索关键词被正确分词,通常我们会采用自定义词典来做,那么怎么获取自定义词典?
+## Several problems encountered in Elasticsearch Chinese search
+1. Search for the glucose keyword, hope that the result contains only glucose, not grapes; search for grapes, hope that the result contains glucose.
+2. Searching for "RMB" will only match the content that contains the keyword "RMB". In fact, "RMB" and "RMB" are synonyms. We hope that users can search for "RMB" and "RMB" to match each other. How to configure ES synonyms ?
+3. User search pinyin: such as "baidu", or the first letter of pinyin "bd", how to match the keyword "百度", and if the user enters the word "摆渡", it can also match the keyword "Baidu", how does the Chinese pinyin match? Do it?
+4. How to ensure that the search keywords are correctly segmented, usually we will use a custom dictionary to do it, so how to get a custom dictionary?
 
-## ik 分词器
-1. ik_max_word：将文本做最细粒度的拆分，比如会将“中华人民共和国人民大会堂”拆分为“中华人民共和国、中华人民、中华、华人、人民共和国、人民、共和国、大会堂、大会、会堂等词语。
-2. ik_smart：会做最粗粒度的拆分，比如会将“中华人民共和国人民大会堂”拆分为中华人民共和国、人民大会堂。
+## ik tokenizer
+1. ik_max_word: Split the text at the finest granularity, such as splitting the "Great Hall of the People of the People's Republic of China" into "People's Republic of China, Chinese People, Chinese, Chinese, People's Republic, People, Republic, Great Hall, Assembly, Words such as hall.
+2. ik_smart: Will do the most coarse-grained split, such as splitting the "Great Hall of the People of the People's Republic of China" into the People's Republic of China and the Great Hall of the People.
 
-## 最佳实践
-两种分词器使用的最佳实践是：索引时用ik_max_word，在搜索时用ik_smart。
+## Best Practices
+The best practice for the use of the two tokenizers is: use ik_max_word for indexing, and ik_smart for search.
 
-即：索引时最大化的将文章内容分词，搜索时更精确的搜索到想要的结果。索引时，为了提供索引的覆盖范围，通常会采用ik_max_word分析器，会以最细粒度分词索引，搜索时为了提高搜索准确度，会采用ik_smart分析器，会以粗粒度分词。
+That is: the content of the article is segmented to the maximum when indexing, and the desired result is more precise when searching. When indexing, in order to provide the coverage of the index, the ik_max_word analyzer is usually used, which will index with the most fine-grained word segmentation. In order to improve the search accuracy, the ik_smart analyzer will be used for coarse-grained word segmentation.
 
-## ES 分词流程之分析（analysis）和分析器（analyzer）
-1. character filter 字符过滤器：在分词前处理字符串，去除HTML标记；
-2. tokenizer 分词器：英文分词可以根据空格将单词分开，中文分词比较复杂，可以采用机器学习算法来分词；
-3. token filters 表征过滤器：修改大小写，停用词，增加同义词，增加词等；
-4. ES分词流程：character filter-->>tokenizer-->>token filters
-5. 自定义analyzer
-6. 分词mapping设置
+## ES word segmentation process analysis and analyzer
+1. character filter: process the string before word segmentation and remove HTML tags;
+2. tokenizer: English word segmentation can separate words according to spaces, Chinese word segmentation is more complicated, and machine learning algorithms can be used to segment words;
+3. token filters characterize filters: modify capitalization, stop words, add synonyms, add words, etc.;
+4. ES word segmentation process: character filter-->>tokenizer-->>token filters
+5. Custom analyzer
+6. Word segmentation mapping settings
 ```
 "content": {
     "type": "string",
@@ -233,8 +228,7 @@ es会根据 JSON 源数据的基础类型猜测你想要的字段映射。将输
 }
 ```
 
-## 同义词
-## Suggest分词
-suggest词需要对拼音前缀，全拼，中文进行前缀匹配，例如：“百度”一词，键入"baidu","bd","百"都必须匹配到，因此在索引的时候需要一词分多个分词器来索引保存，中文采用单字分词，拼音首字母和全拼需要自定义analyzer来索引。
-
+## Synonym
+## Suggest participle
+Suggest words need to match the prefix of Pinyin, Quanpin, and Chinese. For example: "百度", type "baidu", "bd", "百" must be matched, so it needs to be divided into multiple words when indexing A word segmenter is used to index and save. Chinese uses single-character word segmentation. Pinyin first letter and Quanpin require a custom analyzer to index.
 
