@@ -1,5 +1,21 @@
 # Distributed Document Search Engine
+This is an open-source project for a paper search engine, which includes a Scrapy-Redis distributed crawler, an Elasticsearch search engine, and a Django frontend. The project was designed to provide a platform for users to easily search and access research papers.
 
+## Features
+- Scrapy-Redis distributed crawler using CSS Selectors.
+- Centralized deduplication with Redis for distribution.
+- Text search engine implemented with ElasticSearch.
+- Full-stack web application built using Django.
+
+## Technology Stack
+The main technology stack used in this project includes:
+- Scrapy-Redis
+- Elasticsearch
+- Django
+<br />
+<br /> 
+
+**👉👉👉 More technical details that help to understand my project as follows.**
 [中文版本](https://github.com/Beking0912/Distributed-Document-Search-Engine/blob/master/README_zh.MD)
 
 ## Technical selection scrapy vs requests+beautifulsoup
